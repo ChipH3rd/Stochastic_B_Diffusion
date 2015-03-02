@@ -1,8 +1,8 @@
 # Setting up a 2D grid of diffusing particles moving one step per cycle and changing direction only after collision with a fixed barrier
 
 # fundamental variables that will be changed depending on the experiment
-particleNumber <- 4
-barrierPercentage <- 1
+particleNumber <- 100
+barrierPercentage <- 100
 stepNumber <- 5
 Matrix_X <- 100
 Matrix_Y <- 100
@@ -13,8 +13,11 @@ directionPaths <- 8
 directionLst <- 1:8
 stepLst <- list(X = c(0,1,1,1,0,-1,-1,-1), Y = c( 1,1,0,-1,-1,-1,0,1)) # movment in x and y for movment direction value
 gridFociLst <- as.list(1:(Matrix_X*Matrix_Y))
-barrierNumber <- round(barrierPercentage/100*Matrix_X*Matrix_Y, digits = 0)
 particle <- data.frame(X=1, Y=1, D=1, location=1) ## define a particle located at x, y coordinates,  with a movement direction D. defaults 1 for all
+
+barrierNumber <- round(barrierPercentage/100*Matrix_X*Matrix_Y, digits = 0)
+# set up obstacles in the grid space listed in barrierLst. Nonmoving, single point barriers that change the direction (must change direction) of the moving particle.
+barrierLst <- sample(gridFociLst, barrierNumber, replace = FALSE, prob = NULL )
 
 # Misc functions
 locationCalc <- function(part){(part[1]-1)*Matrix_Y+part[2]}
@@ -39,10 +42,7 @@ for (i in 1:particleNumber) {ParticleSet[[i]][1] <- round(Matrix_X/2, digits = 0
 
 for (i in 1:particleNumber) {ParticleSet[[i]][4] <- locationCalc(ParticleSet[[i]])}
 
-# set up obstacles in the grid space listed in barrierLst. Nonmoving, single point barriers that change the direction (must change direction) of the moving particle.
-barrierLst <- sample(gridFociLst, barrierNumber, replace = FALSE, prob = NULL )
-
-ParticleSet # print the particles' starting positions and movement direction
+#ParticleSet # print the particles' starting positions and movement direction
 
 # The main iterations of the particle diffuision experiment
 for (j in 1:stepNumber){ 
@@ -63,5 +63,11 @@ for (i in 1:particleNumber) {ParticleSet[[i]][1] <- ParticleSet[[i]][1] + stepLs
 
 }
 }
+#ParticleSet
 
-ParticleSet
+distX <- ParticleSet[[1]][1]
+distY <- ParticleSet[[1]][2]
+
+for (i in 2:particleNumber) { distX <-c(distX,ParticleSet[[i]][1])
+                              distY <-c(distY,ParticleSet[[i]][2])}
+plot(distX,distY)

@@ -58,13 +58,13 @@ for (j in 1:stepNumber){
 
 for (i in 1:particleNumber) {                     
                       # calculate if particle i has escaped the defined grid area and bring them back through the opposite walls
-                      if (ParticleSet[[i]][1] > Matrix_X) {ParticleSet[[i]][1] <- ParticleSet[[i]][1]-Matrix_X} 
-                      if (ParticleSet[[i]][1] < 1) {ParticleSet[[i]][1] <- ParticleSet[[i]][1]+Matrix_X}
-                      if (ParticleSet[[i]][2] > Matrix_Y) {ParticleSet[[i]][2] <- ParticleSet[[i]][2]-Matrix_Y}
-                      if (ParticleSet[[i]][2] < 1) {ParticleSet[[i]][2] <- ParticleSet[[i]][2]+Matrix_Y}
+                      if (ParticleSet[i,1] > Matrix_X) {ParticleSet[i,1] <- ParticleSet[i,1]-Matrix_X} 
+                      if (ParticleSet[i,1] < 1) {ParticleSet[i,1] <- ParticleSet[i,1]+Matrix_X}
+                      if (ParticleSet[i,2] > Matrix_Y) {ParticleSet[i,2] <- ParticleSet[i,2]-Matrix_Y}
+                      if (ParticleSet[i,2] < 1) {ParticleSet[i,2] <- ParticleSet[i,2]+Matrix_Y}
                       
-                      # recalculate the position number from the new x,y coordinates for particle i
-                      ParticleSet[[i]][4] <- locationCalc(ParticleSet[[i]]) 
+                      # calculate the position number from the new x,y coordinates for particle i
+                      ParticleSet[,4] <- locationCalc(ParticleSet[,1],ParticleSet[,2])}
                       # change direction of particle i movement if a barrier is in the same location
                       if (useBarriers) {if (any(barrierLst == ParticleSet[[i]]$location)) {tmpLst <- directionLst[-unlist(ParticleSet[[i]]$D)]
                                                               ParticleSet[[i]]$D <- sample(tmpLst, size = 1, replace = TRUE, prob = NULL)}}

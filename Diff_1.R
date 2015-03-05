@@ -2,14 +2,14 @@
 
 # fundamental variables that will be changed depending on the experiment
 particleNumber <- 200
-barrierPercentage <- 0
+barrierPercentage <- 20
 Matrix_X <- 100
 Matrix_Y <- 100
 particleDistribution <- 1  # 0 for random particle placement within the grid; 1, for particles all placed in the center of the grid
-useBarriers <- FALSE # if barriers are used (TRUE) each particles moves along the same direction for each step until a barrier is hit when . The next movment in in a different direction.
-                    # If barriers are not (FALSE) used each particle step is in a random direction. Use low % barriers for ballistic movements.
+useBarriers <- TRUE # if barriers are used (TRUE) each particles moves along the same direction for each step until a barrier is hit when . The next movment in in a different direction.
+                    # If barriers are not used (FALSE) each particle step is in a new random direction. Use low % barriers for ballistic movements but set the matrix size large.
 
-timeSeriesLst <- c(0, 10, 30) # the experiment will step through the listed step sizes
+timeSeriesLst <- c(0, 10, 30, 50) # the experiment will step through the listed step sizes
 
 # Misc. fixed values that are defined by the model or calculated from the experimental variables above
 dataSetD <- 1:length(timeSeriesLst)
@@ -90,5 +90,5 @@ if (particleDistribution == 1){distLst <- twoDDistanceCalc(unlist(ParticleSet[[1
 cntr <- cntr+1
 }
 
-if (particleDistribution == 1){plot(timeSeriesLst, dataSetD, main = "Avg Distance Traveled (vs) Step Number", xlab = "Step Number", ylab = "Average Particle Distance from Center", )}
- plot(distX,distY, xlim = c(0,101), ylim = c(0,101),main = "Particle Distribution", xlab = "Grid Position X", ylab ="Grid Position Y" asp = Matrix_Y/Matrix_X)
+if (particleDistribution == 1){plot(timeSeriesLst, dataSetD, main = "Avg Distance Traveled (vs) Step Number", xlab = "Step Number", ylab = "Average Particle Distance from Center")}
+ plot(distX,distY, xlim = c(0,101), ylim = c(0,101),main = "Particle Distribution", xlab = "Grid Position X", ylab ="Grid Position Y", asp = Matrix_Y/Matrix_X)

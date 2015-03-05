@@ -1,15 +1,17 @@
 # Setting up a 2D grid of diffusing particles moving one step per cycle and changing direction only after collision with a fixed barrier
 
 # fundamental variables that will be changed depending on the experiment
-particleNumber <- 200
-barrierPercentage <- 100
-Matrix_X <- 100
-Matrix_Y <- 100
+particleNumber <- 800
+barrierPercentage <- 80
+Matrix_X <- 200
+Matrix_Y <- 200
 particleDistribution <- 1  # 0 for random particle placement within the grid; 1, for particles all placed in the center of the grid
-useBarriers <- TRUE # if barriers are used (TRUE) each particles moves along the same direction for each step until a barrier is hit when . The next movment in in a different direction.
+useBarriers <- FALSE # if barriers are used (TRUE) each particles moves along the same direction for each step until a barrier is hit when . The next movment in in a different direction.
                     # If barriers are not used (FALSE) each particle step is in a new random direction. Use low % barriers for ballistic movements but set the matrix size large.
 
-timeSeriesLst <- c(0, 10) # the experiment will step through the listed step sizes
+timeSeriesLst <- c(5,10,20,40,80,120,200) # each value is the step number for an individual diffusion experiment. The
+# particle distribution plot will be for the last experiment. The mean distance for the particles for each experiment is saved in "dataSetD"
+# saved as DataB with DataA holding the timeSeriesLst
 
 # Misc. fixed values that are defined by the model or calculated from the experimental variables above
 dataSetD <- 1:length(timeSeriesLst)
@@ -76,10 +78,9 @@ for (j in 1:stepNumber){
         {if (gridBarrierMatrix[ParticleSet[k,4]]) {ParticleSet[k,3] <- sample(directionLst[-ParticleSet[k,3]], size = 1, replace = TRUE, prob = NULL)}}}    
     else {ParticleSet[,3] <- sample.int(directionPaths, size = particleNumber, replace = TRUE, prob = NULL)}
 
-} # end of stepNumber iterations
+} # end of stepNumber iterations 
 
 # ParticleSet
-
 # pulling all the distances, x & y, for all particles into distX and distY then calculating the mean change in distance from center when 
 # particles are initially positioned at the center.
 
@@ -87,5 +88,18 @@ if (particleDistribution == 1){dataSetD[cntr] <- mean(twoDDistanceCalc(ParticleS
 cntr <- cntr+1
 }
 
-if (particleDistribution == 1){plot(timeSeriesLst, dataSetD, main = "Avg Distance Traveled (vs) Step Number", xlab = "Step Number", ylab = "Average Particle Distance from Center")}
- plot(ParticleSet[,1],ParticleSet[,2], xlim = c(0,101), ylim = c(0,101),main = "Particle Distribution", xlab = "Grid Position X", ylab ="Grid Position Y", asp = Matrix_Y/Matrix_X)
+plot(ParticleSet[,1],ParticleSet[,2], xlim = c(0,Matrix_X*1.04), ylim = c(0,Matrix_Y*1.04),main = "Particle Distribution", xlab = "Grid Position X", ylab ="Grid Position Y", asp = Matrix_Y/Matrix_X)
+if (particleDistribution == 1){
+  write(timeSeriesLst, file = "dataA", ncolumns = 1)
+  write(dataSetD, file = "dataB", ncolumns = 1)
+  plot(timeSeriesLst, dataSetD, main = "Avg Distance Traveled (vs) Step Number", xlab = "Step Number", ylab = "Average Particle Distance from Center")
+  if (length(dataSetD) > 3){
+    fit = nls(dataSetD ~ p1 + p2*timeSeriesLst^p3, start = list(p1 = 0.1, p2 = 1.0, p3 = 0.5))
+    newt = data.frame(timeSeriesLst = seq(min(timeSeriesLst),max(timeSeriesLst),len=200))
+    lines(newt$timeSeriesLst,predict(fit,newdata=newt))
+    dataFitS <- matrix(summary(fit)[[10]],2,3)
+    text(90,5, labels = sprintf("power = %5.3f",dataFitS[3])
+    text(90,4, labels = sprintf("amplitude = %5.3f",dataFitS[2]))
+    text(90,3, labels = sprintf("offset = %5.3f",dataFitS[1]))}
+         
+}

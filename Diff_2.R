@@ -1,15 +1,15 @@
 # Setting up a 2D grid of diffusing particles moving one step per cycle and changing direction only after collision with a fixed barrier
 
 # fundamental variables that will be changed depending on the experiment
-particleNumber <- 800
-barrierPercentage <- 80
+particleNumber <- 1200
+barrierPercentage <- 20
 Matrix_X <- 200
 Matrix_Y <- 200
 particleDistribution <- 1  # 0 for random particle placement within the grid; 1, for particles all placed in the center of the grid
 useBarriers <- FALSE # if barriers are used (TRUE) each particles moves along the same direction for each step until a barrier is hit when . The next movment in in a different direction.
                     # If barriers are not used (FALSE) each particle step is in a new random direction. Use low % barriers for ballistic movements but set the matrix size large.
 
-timeSeriesLst <- c(5,10,20,40,80,120,200) # each value is the step number for an individual diffusion experiment. The
+timeSeriesLst <- c(5,10,15,20,30,40,60,80,100, 120,150,200) # each value is the step number for an individual diffusion experiment. The
 # particle distribution plot will be for the last experiment. The mean distance for the particles for each experiment is saved in "dataSetD"
 # saved as DataB with DataA holding the timeSeriesLst
 
@@ -92,14 +92,17 @@ plot(ParticleSet[,1],ParticleSet[,2], xlim = c(0,Matrix_X*1.04), ylim = c(0,Matr
 if (particleDistribution == 1){
   write(timeSeriesLst, file = "dataA", ncolumns = 1)
   write(dataSetD, file = "dataB", ncolumns = 1)
-  plot(timeSeriesLst, dataSetD, main = "Avg Distance Traveled (vs) Step Number", xlab = "Step Number", ylab = "Average Particle Distance from Center")
+  plot(timeSeriesLst, dataSetD, main = "Avg Distance Traveled (vs) Step Number", xlab = "Step Number (X)", ylab = "Average Particle Distance from Center (Y)")
   if (length(dataSetD) > 3){
     fit = nls(dataSetD ~ p1 + p2*timeSeriesLst^p3, start = list(p1 = 0.1, p2 = 1.0, p3 = 0.5))
     newt = data.frame(timeSeriesLst = seq(min(timeSeriesLst),max(timeSeriesLst),len=200))
     lines(newt$timeSeriesLst,predict(fit,newdata=newt))
     dataFitS <- matrix(summary(fit)[[10]],2,3)
-    text(90,5, labels = sprintf("power = %5.3f",dataFitS[3])
-    text(90,4, labels = sprintf("amplitude = %5.3f",dataFitS[2]))
-    text(90,3, labels = sprintf("offset = %5.3f",dataFitS[1]))}
-         
+    
+    xLpos <- (max(timeSeriesLst) + min(timeSeriesLst))/1.5
+    yLpos <- (max(dataSetD) + min(dataSetD))/4
+    text(xLpos,yLpos, labels = sprintf("power (p) = %5.3f",dataFitS[3]))
+    text(xLpos,yLpos*.8, labels = sprintf("amplitude (a) = %5.3f",dataFitS[2]))
+    text(xLpos,yLpos*.6, labels = sprintf("offset (o) = %5.3f",dataFitS[1]))
+    text(xLpos,yLpos*1.25, labels = sprintf("equation: Y = o + a*X^p"))}
 }
